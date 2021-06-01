@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
-//using OfficeOpenXml;
 
+/// <summary>
+/// 显示分数
+/// </summary>
 public class ShowScore : MonoBehaviour
 {
     public Text nameText;
     public Text scoreList;
-    public GameObject TotalScore;
+    public GameObject totalScore;
 
     private void Awake()
     {
-        TotalScore = transform.GetChild(4).gameObject;
+        totalScore = transform.GetChild(4).gameObject;
     }
 
     private void Start()
@@ -42,8 +42,8 @@ public class ShowScore : MonoBehaviour
         int totalNum = 0;
         for (int i = 0; i < score.Length; i++)
             totalNum += score[i];
-        TotalScore.SetActive(true);
-        TotalScore.transform.GetChild(1).GetComponent<Text>().text = totalNum.ToString();
+        totalScore.SetActive(true);
+        totalScore.transform.GetChild(1).GetComponent<Text>().text = totalNum.ToString();
         string name = PlayerPrefs.GetString("name");
         string number = PlayerPrefs.GetString("number");
     }

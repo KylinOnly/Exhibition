@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using Unity.Mathematics;
-//using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 显示需要在当前展品前停留的时间
+/// </summary>
 public class ScoreBar : MonoBehaviour
 {
     private Slider _slider; //滑动条

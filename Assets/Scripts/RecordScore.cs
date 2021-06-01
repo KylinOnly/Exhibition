@@ -10,7 +10,7 @@ public class RecordScore : MonoBehaviour
     public static RecordScore Instance;
     [Header("图片单值分数")] public int imageScore = 20; //图片单值分数
     [Header("视频单值分数")] public int videoScore = 10; //视频单值分数
-    [Header("图片前必须停留的时间")] public int stayImageTime = 8; //图片前停留的时间
+    [Header("图片前必须停留的时间（必须为偶数）")] public int stayImageTime = 8; //图片前停留的时间
 
     private int[] _score;
     private string[] _name;
@@ -44,7 +44,7 @@ public class RecordScore : MonoBehaviour
         {
             case "Video":
                 //播放视频
-                VideoPlayer videoPlayer = other.transform.parent.GetChild(1).GetComponent<VideoPlayer>();//播放
+                VideoPlayer videoPlayer = other.transform.parent.GetChild(1).GetComponent<VideoPlayer>(); //播放
                 videoPlayer.Play();
                 //获得视频长度与名字，在ui上显示
                 _recordVideoScore = RecordVideoScore(videoPlayer.clip.length, int.Parse(other.transform.parent.name));
@@ -72,7 +72,7 @@ public class RecordScore : MonoBehaviour
         {
             case "Video":
                 VideoPlayer videoPlayer = other.transform.parent.GetChild(1).GetComponent<VideoPlayer>();
-                videoPlayer.Pause();
+                videoPlayer.Pause(); //暂停视频
                 _showScore.SetName(" ");
                 _showScore.UpdateList();
                 StopCoroutine(_loadTime);
@@ -87,22 +87,29 @@ public class RecordScore : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 当用户停留在视频前的计时，停留时间达到视频总时长1/4时才有基础分数（1/4的规定分数）；随后每过1/4的时间，加1/4的分数
+    /// </summary>
+    /// <param name="stayTime">规定的停留时间</param>
+    /// <param name="index">当前图片在计分列表中的指引</param>
+    /// <returns></returns>
     IEnumerator RecordVideoScore(double length, int index)
     {
+        int videoScoreDivided = videoScore / 4;
         float t = 0;
         while (true)
         {
             t += 0.5f;
 
             if (t < length / 2 && t >= length / 4) //1/4~2/4
-                _score[index] = 5;
+                _score[index] = videoScoreDivided;
             else if (t < length / 4 * 3 && t >= length / 2) //2/4~3/4
-                _score[index] = 10;
+                _score[index] = 2 * videoScoreDivided;
             else if (t < length && t >= length / 4 * 3) //3/4~4/4
-                _score[index] = 15;
+                _score[index] = 3 * videoScoreDivided;
             else if (t >= length) //4/4
             {
-                _score[index] = 20;
+                _score[index] = videoScoreDivided;
                 print("已完成");
                 yield break;
             }
@@ -113,20 +120,27 @@ public class RecordScore : MonoBehaviour
         }
     }
 
-    IEnumerator RecordImageScore(int stayTime, int index)
+    /// <summary>
+    /// 当用户停留在图片前的计时，停留时间达到规定停留时间1/4时才有基础分数（1/4的规定分数）；随后每过1/4的时间，加1/4的分数
+    /// </summary>
+    /// <param name="stayTime">规定的停留时间</param>
+    /// <param name="index">当前图片在计分列表中的指引</param>
+    /// <returns></returns>
+    private IEnumerator RecordImageScore(int stayTime, int index)
     {
+        int imageScoreDivided = imageScore / 4;
         float t = 0;
         while (true)
         {
             if (t < stayTime / 2 && t >= stayTime / 4) //1/4~2/4
-                _score[index] = 5;
+                _score[index] = imageScoreDivided;
             else if (t < stayTime / 4 * 3 && t >= stayTime / 2) //2/4~3/4
-                _score[index] = 10;
+                _score[index] = 2 * imageScoreDivided;
             else if (t < stayTime && t >= stayTime / 4 * 3) //3/4~4/4
-                _score[index] = 15;
+                _score[index] = 3 * imageScoreDivided;
             else if (t >= stayTime) //4/4
             {
-                _score[index] = 20;
+                _score[index] = imageScoreDivided;
                 print("已完成");
                 yield break;
             }
